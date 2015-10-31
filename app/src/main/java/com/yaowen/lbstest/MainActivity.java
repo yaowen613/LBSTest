@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private String provider;
     private LocationManager locationManager;
 
-    @TargetApi(Build.VERSION_CODES.M)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,81 +29,63 @@ public class MainActivity extends AppCompatActivity {
         locationText = (TextView) findViewById(R.id.locationText);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        // 获取所有可⽤的位置提供器
+        // 获取所有可用的位置提供器
         List<String> providerList = locationManager.getProviders(true);
         if (providerList.contains(LocationManager.GPS_PROVIDER)) {
             provider = LocationManager.GPS_PROVIDER;
-        } else if (providerList.contains(LocationManager.NETWORK_PROVIDER)) {
+        } else if
+                (providerList.contains(LocationManager.NETWORK_PROVIDER)) {
             provider = LocationManager.NETWORK_PROVIDER;
         } else {
-            // 当没有可⽤的位置提供器时，弹出Toast提⽰⽤户
-            Toast.makeText(this, "当前机器没有开启定位模块！", Toast.LENGTH_SHORT).show();
+            // 当没有可用的位置提供器时，弹出Toast提⽰用户
+            Toast.makeText(this, "当前设备没有开启定位模块或者该设备不支持定位！",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for Activity#requestPermissions for more details.
-            return;
-        }
+
         Location location = locationManager.getLastKnownLocation(provider);
         if (location != null) {
             // 显⽰当前设备的位置信息
             showLocation(location);
         }
+
         locationManager.requestLocationUpdates(provider, 5000, 1, locationListener);
     }
 
-    @Override
+    @TargetApi(Build.VERSION_CODES.M)
     protected void onDestroy() {
         super.onDestroy();
         if (locationManager != null) {
             // 关闭程序时将监听器移除
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for Activity#requestPermissions for more details.
-                return;
-            }
             locationManager.removeUpdates(locationListener);
         }
     }
 
     LocationListener locationListener = new LocationListener() {
         @Override
-        public void onLocationChanged(Location location) {
-            // 更新当前设备的位置信息
-            showLocation(location);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
+        public void onStatusChanged(String provider, int status, Bundle
+                extras) {
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-
         }
 
         @Override
         public void onProviderDisabled(String provider) {
+        }
 
+        @Override
+        public void onLocationChanged(Location location) {
+            // 更新当前设备的位置信息
+            showLocation(location);
         }
     };
 
     private void showLocation(Location location) {
-        String currentPosition = "维度为： " + location.getLatitude()
+        String currentPosition = "维度： " + location.getLatitude()
                 + "\n"
-                + "经度为： " + location.getLongitude();
+                + "经度：" + location.getLongitude();
         locationText.setText(currentPosition);
     }
 }
